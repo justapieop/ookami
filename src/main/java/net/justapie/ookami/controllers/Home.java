@@ -9,9 +9,9 @@ import java.io.Serializable;
 public class Home {
     @GetMapping("/")
     private HomeResponse getHome() {
-        return new HomeResponse("ok", "1.0");
+        return new HomeResponse("ok");
     }
 }
 
-record HomeResponse(String status, String version) implements Serializable {
+record HomeResponse(String status) implements Serializable {
 }
