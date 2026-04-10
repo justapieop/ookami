@@ -1,4 +1,4 @@
-package net.justapie.ookami.entities;
+package net.justapie.ookami.repositories.user;
 
 import jakarta.persistence.*;
 import lombok.Getter;

@@ -1,6 +1,5 @@
-package net.justapie.ookami.repositories;
+package net.justapie.ookami.repositories.user;
 
-import net.justapie.ookami.entities.User;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.query.Param;
