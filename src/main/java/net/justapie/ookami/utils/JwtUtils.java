@@ -28,7 +28,7 @@ public class JwtUtils {
                 .cached(true).build());
     }
 
-    public boolean verifyJwt(String jwt) throws JwkException {
+    public String verifyJwt(String jwt) throws JwkException {
         DecodedJWT decoded = JWT.decode(jwt);
 
         String alg = decoded.getAlgorithm();
@@ -46,9 +46,6 @@ public class JwtUtils {
             default -> throw new JwkException("Unsupported algorithm: " + alg);
         };
         JWT.require(algo).build().verify(jwt);
-
-        String uid = decoded.getSubject();
-
-        return false;
+        return decoded.getSubject();
     }
 }
