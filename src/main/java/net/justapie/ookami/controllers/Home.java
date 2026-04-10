@@ -7,11 +7,11 @@ import java.io.Serializable;
 
 @RestController("/")
 public class Home {
+    public record HomeResponse(String status) implements Serializable {
+    }
+
     @GetMapping("/")
     private HomeResponse getHome() {
         return new HomeResponse("ok");
     }
-}
-
-record HomeResponse(String status) implements Serializable {
 }
