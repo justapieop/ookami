@@ -1,14 +1,17 @@
 package net.justapie.ookami.repositories.user;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import net.justapie.ookami.utils.Role;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Getter
-@Setter
+@Getter()
 @Builder
 @Entity
 @Table(
@@ -45,6 +48,9 @@ public class User implements Serializable {
     private LocalDateTime updatedAt;
 
     @Column(nullable = false)
+    private byte roles;
+
+    @Column(nullable = false)
     private boolean onboarded = true;
 
     @PrePersist
@@ -55,5 +61,21 @@ public class User implements Serializable {
     @PreUpdate
     public void preUpdate() {
         this.updatedAt = LocalDateTime.now();
+    }
+
+    public boolean hasRole(Role role) {
+        switch (role) {
+            case Admin -> {
+                return ((this.roles >> 1) & 1) == 1;
+            }
+            case User -> {
+                return this.suspended && this.onboarded;
+            }
+            case Moderator -> {
+                return (this.roles & 1) == 1;
+            }
+        }
+
+        return false;
     }
 }
