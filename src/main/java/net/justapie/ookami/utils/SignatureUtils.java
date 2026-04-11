@@ -25,7 +25,7 @@ public class SignatureUtils {
         return result.toString();
     }
 
-    private static boolean constantTimeCompare(String a, String b) {
+    public static boolean constantTimeCompare(String a, String b) {
         if (a.length() != b.length()) {
             return false;
         }
