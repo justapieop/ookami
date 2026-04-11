@@ -1,12 +1,17 @@
 package net.justapie.ookami.repositories.user;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
+@Builder
 @Entity
 @Table(
         name = "users",
@@ -14,6 +19,8 @@ import java.util.UUID;
                 @Index(columnList = "id", unique = true),
                 @Index(columnList = "username", unique = true)
         })
+@AllArgsConstructor
+@NoArgsConstructor
 public class User implements Serializable {
     @Id
     private UUID id;
@@ -32,4 +39,23 @@ public class User implements Serializable {
 
     @Column(nullable = false)
     private boolean suspended = false;
+
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
+    @Column(nullable = false)
+    private boolean onboarded = true;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
 }
