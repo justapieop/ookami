@@ -8,6 +8,8 @@ import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @CacheConfig({"users"})
 @Service
 public class UserService {
@@ -15,6 +17,24 @@ public class UserService {
 
     public UserService(UserRepository repository) {
         this.repository = repository;
+    }
+
+    @Caching(
+            put = {
+                    @CachePut(key = "'id:' + #result.id", unless = "#result == null"),
+            }
+    )
+    public User getUserById(UUID id) {
+        return this.repository.findUserById(id).orElseThrow();
+    }
+
+    @Caching(
+            put = {
+                    @CachePut(key = "'username:' + #result.id", unless = "#result == null"),
+            }
+    )
+    public User getUserByUsername(String username) {
+        return this.repository.findUserByUsername(username).orElseThrow();
     }
 
     @Caching(
