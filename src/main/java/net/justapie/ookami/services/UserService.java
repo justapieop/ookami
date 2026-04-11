@@ -1,6 +1,6 @@
 package net.justapie.ookami.services;
 
-import net.justapie.ookami.controllers.users.webhook.WebhookDto;
+import net.justapie.ookami.controllers.users.webhook.WebhookUser;
 import net.justapie.ookami.repositories.user.User;
 import net.justapie.ookami.repositories.user.UserRepository;
 import org.springframework.cache.annotation.CacheEvict;
@@ -8,6 +8,7 @@ import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
@@ -49,19 +50,30 @@ public class UserService {
         return this.repository.findUserByUsername(username).orElseThrow();
     }
 
-    @Caching(
-            put = {
-                    @CachePut(value = ID_CACHE_KEY, key = "#result.id", unless = "#result == null")
-            }
-    )
-    public User createUser(WebhookDto dto) {
+    @Caching(put = {
+            @CachePut(value = ID_CACHE_KEY, key = "#result.id", unless = "#result == null"),
+            @CachePut(value = USERNAME_CACHE_KEY, key = "#result.username", unless = "#result == null && #result.onboarded == false")
+    })
+    public User saveUser(WebhookUser whUser) {
         final User user = User.builder()
-                .id(dto.getPayload().getUser().getId())
-                .username(dto.getPayload().getUser().getId().toString())
-                .displayName(dto.getPayload().getUser().getStandardAttributes().getName())
-                .email(dto.getPayload().getUser().getStandardAttributes().getEmail())
-                .avatarUrl(dto.getPayload().getUser().getStandardAttributes().getPicture())
+                .id(whUser.getId())
+                .username(whUser.getId().toString())
+                .displayName(whUser.getStandardAttributes().getName())
+                .email(whUser.getStandardAttributes().getEmail())
+                .avatarUrl(whUser.getStandardAttributes().getPicture())
+                .suspended(false)
+                .onboarded(false)
+                .updatedAt(LocalDateTime.now())
+                .createdAt(LocalDateTime.now())
                 .build();
-        return this.repository.save(user);
+
+        try {
+            return this.repository.save(user);
+        } catch (Exception e) {
+            this.repository.mergeUser(user);
+            return this.repository.findUserById(user.getId()).orElseThrow();
+        }
     }
+
+
 }

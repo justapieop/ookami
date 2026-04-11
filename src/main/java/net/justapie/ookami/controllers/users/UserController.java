@@ -35,7 +35,7 @@ public class UserController {
     @VerifyWebhookSignature
     @PostMapping
     public User createUser(@RequestBody WebhookDto dto) {
-        return this.service.createUser(dto);
+        return this.service.saveUser(dto.getPayload().getUser());
     }
 
     @GetMapping

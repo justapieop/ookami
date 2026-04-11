@@ -19,15 +19,11 @@ public interface UserRepository extends Repository<User, UUID> {
 
     @Transactional
     @Modifying
-    @Query("UPDATE User u SET " +
-            "u.displayName = COALESCE(:#{#user.displayName}, u.displayName), " +
-            "u.avatarUrl = COALESCE(:#{#user.avatarUrl}, u.avatarUrl), " +
-            "u.updatedAt = :#{#user.updatedAt} " +
-            "WHERE u.email = :#{#user.email}")
-    void updateUser(User user);
+    @Query("UPDATE User u SET u.email = :#{#user.email}, u.avatarUrl = :#{#user.avatarUrl}, u.createdAt = CURRENT_TIMESTAMP, u.onboarded = true WHERE u.id = :#{#user.id}")
+    void mergeUser(@Param("user") User user);
 
     @Transactional
     @Modifying
-    @Query("UPDATE User u SET u.username = :username WHERE u.id = :id")
+    @Query("UPDATE User u SET u.username = :username, u.updatedAt = CURRENT_TIMESTAMP WHERE u.id = :id")
     void updateUsername(@Param("id") UUID id, @Param("username") String username);
 }
