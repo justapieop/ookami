@@ -3,16 +3,18 @@ package net.justapie.ookami.services;
 import net.justapie.ookami.controllers.users.webhook.WebhookDto;
 import net.justapie.ookami.repositories.user.User;
 import net.justapie.ookami.repositories.user.UserRepository;
-import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
-@CacheConfig({"users"})
 @Service
 public class UserService {
+    private static final String ID_CACHE_KEY = "users:id";
+    private static final String USERNAME_CACHE_KEY = "users:username";
+
     private final UserRepository repository;
 
     public UserService(UserRepository repository) {
@@ -20,8 +22,18 @@ public class UserService {
     }
 
     @Caching(
+            evict = {
+                    @CacheEvict(value = USERNAME_CACHE_KEY, key = "#username"),
+                    @CacheEvict(value = ID_CACHE_KEY, key = "#id")
+            }
+    )
+    public void updateUsername(UUID id, String username) {
+        this.repository.updateUsername(id, username);
+    }
+
+    @Caching(
             put = {
-                    @CachePut(key = "'id:' + #result.id", unless = "#result == null"),
+                    @CachePut(value = ID_CACHE_KEY, key = "#id", unless = "#result == null"),
             }
     )
     public User getUserById(UUID id) {
@@ -30,7 +42,7 @@ public class UserService {
 
     @Caching(
             put = {
-                    @CachePut(key = "'username:' + #result.id", unless = "#result == null"),
+                    @CachePut(value = USERNAME_CACHE_KEY, key = "#username", unless = "#result == null"),
             }
     )
     public User getUserByUsername(String username) {
@@ -39,8 +51,7 @@ public class UserService {
 
     @Caching(
             put = {
-                    @CachePut(key = "'id:' + #result.id", unless = "#result == null"),
-                    @CachePut(key = "'username:' + #result.username", unless = "#result == null")
+                    @CachePut(value = ID_CACHE_KEY, key = "#result.id", unless = "#result == null")
             }
     )
     public User createUser(WebhookDto dto) {
