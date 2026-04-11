@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.Serializable;
 
 @RestController("/")
-public class Home {
+public class HomeController {
     public record HomeResponse(String status) implements Serializable {
     }
 
