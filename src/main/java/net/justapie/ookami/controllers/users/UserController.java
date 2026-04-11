@@ -1,9 +1,18 @@
 package net.justapie.ookami.controllers.users;
 
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import net.justapie.ookami.annotations.AuthenticatedUser;
+import net.justapie.ookami.annotations.VerifyAccessToken;
 import net.justapie.ookami.annotations.VerifyWebhookSignature;
 import net.justapie.ookami.controllers.users.webhook.WebhookDto;
 import net.justapie.ookami.repositories.user.User;
 import net.justapie.ookami.services.UserService;
+import net.justapie.ookami.utils.Constants;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.web.ErrorResponseException;
 import org.springframework.web.bind.annotation.*;
@@ -11,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
+@Tag(name = "Users")
 @RestController
 @RequestMapping("/users")
 public class UserController {
@@ -27,11 +37,26 @@ public class UserController {
     }
 
     @GetMapping
+    @ApiResponses(
+            value = {
+                    @ApiResponse(responseCode = "404", description = "User not found", content = @Content),
+                    @ApiResponse(responseCode = "200", description = "User found", content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = User.class))
+                    })
+            }
+    )
     public User getUser(GetUserRequestParam param) {
         try {
             return param.getId() != null ? this.service.getUserById(UUID.fromString(param.getId())) : this.service.getUserByUsername(param.getUsername());
         } catch (NoSuchElementException e) {
             throw new ErrorResponseException(HttpStatusCode.valueOf(404));
         }
+    }
+
+    @SecurityRequirement(name = Constants.BEARER_AUTH_KEY)
+    @VerifyAccessToken
+    @GetMapping("/me")
+    public User getMe(@AuthenticatedUser User user) {
+        return user;
     }
 }
