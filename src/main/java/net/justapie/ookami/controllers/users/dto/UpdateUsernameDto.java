@@ -1,4 +1,4 @@
-package net.justapie.ookami.controllers.users;
+package net.justapie.ookami.controllers.users.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
