@@ -18,6 +18,18 @@ public class User implements Serializable {
     @Id
     private UUID id;
 
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String username;
+
+    @Column(name = "display_name")
+    private String displayName;
+
+    @Column(unique = true, nullable = false)
+    private String email;
+
+    @Column(name = "avatar_url")
+    private String avatarUrl;
+
+    @Column(nullable = false)
+    private boolean suspended = false;
 }
