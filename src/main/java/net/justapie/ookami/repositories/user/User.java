@@ -66,13 +66,13 @@ public class User implements Serializable {
     public boolean hasRole(Role role) {
         switch (role) {
             case Admin -> {
-                return ((this.roles >> 1) & 1) == 1;
+                return this.hasRole(Role.User) && ((this.roles >> 1) & 1) == 1;
             }
             case User -> {
                 return this.suspended && this.onboarded;
             }
             case Moderator -> {
-                return (this.roles & 1) == 1;
+                return this.hasRole(Role.User) && (this.roles & 1) == 1;
             }
         }
 

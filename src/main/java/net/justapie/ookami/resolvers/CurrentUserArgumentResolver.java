@@ -2,6 +2,7 @@ package net.justapie.ookami.resolvers;
 
 import jakarta.servlet.http.HttpServletRequest;
 import net.justapie.ookami.annotations.AuthenticatedUser;
+import net.justapie.ookami.annotations.RequireRole;
 import net.justapie.ookami.repositories.user.User;
 import org.jspecify.annotations.NonNull;
 import org.springframework.core.MethodParameter;
@@ -17,6 +18,7 @@ public class CurrentUserArgumentResolver implements HandlerMethodArgumentResolve
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
         return parameter.getParameterAnnotation(AuthenticatedUser.class) != null &&
+                parameter.getParameterAnnotation(RequireRole.class) != null &&
                 parameter.getParameterType().equals(User.class);
     }
 
