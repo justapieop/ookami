@@ -12,12 +12,12 @@ import java.net.URISyntaxException;
 
 @SpringBootApplication
 @EnableCaching
-public class OokamiApplication {
+public class Main {
     @Value("${app.jwks.url}")
     private String jwkUrl;
 
     public static void main(String[] args) throws MalformedURLException, URISyntaxException {
-        SpringApplication.run(OokamiApplication.class, args);
+        SpringApplication.run(Main.class, args);
     }
 
     @PostConstruct
